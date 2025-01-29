@@ -1,20 +1,21 @@
-# Web scraping logic
+import asyncio
+import aiohttp
+from bs4 import BeautifulSoup as bs
 from datetime import datetime, timezone
 from urllib.parse import urljoin
-import requests
-from bs4 import BeautifulSoup as bs
 from .database import SessionLocal
 from .models import Website, Article
-import asyncio
 
 
-def scrape_webiste(website_data):
-    # Create a database session
-    db = SessionLocal()
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.text()
 
+
+async def scrape_webiste(session, website_data, db):
     try:
-        response = requests.get(website_data["url"])
-        soup = bs(response.text, "html.parser")
+        html = await fetch(session, website_data["url"])
+        soup = bs(html, "html.parser")
 
         # Get the website's favicon URL form the <link> tag
         favicon_tag = soup.find("link", rel="icon")
@@ -58,8 +59,8 @@ def scrape_webiste(website_data):
                     article_url = urljoin(website_data["url"], link)
 
                     # Redirecting to the article page
-                    response = requests.get(article_url)
-                    soup = bs(response.text, "html.parser")
+                    html = await fetch(session, article_url)
+                    soup = bs(html, "html.parser")
 
                     # Get the headline
                     headline_tag = soup.find("h1")
@@ -90,37 +91,47 @@ def scrape_webiste(website_data):
     except Exception as e:
         # In case of an error will Rollback
         db.rollback()
-        print(f"An error occurred: {e}")
+        print(f"An error occurred scraping {website_data["url"]}: {e}")
+
+
+async def main():
+    websites = [
+        {
+            "name": "engadget",
+            "url": "https://www.engadget.com/gaming/pc/",
+            "section_selector": {"tag": "ul", "class": "D(b) Jc(sb) Flw(w) M(0) P(0) List(n)"},
+            "article_selector": {"tag": "li", "class": "Mb(24px) Bxz(bb)"},
+            "headline_selector": "h1",
+            "thumbnail_selector": {"tag": "div", "class": "caas-img-container"},
+        },
+        {
+            "name": "kotaku",
+            "url": "https://kotaku.com/latest",
+            "section_selector": {"tag": "div", "class": "sc-17uq8ex-0 fakHlO"},
+            "article_selector": {"tag": "div", "class": "sc-3kpz0l-2 ciHPAq"},
+            "headline_selector": "h1",
+            "thumbnail_selector": {"tag": "div", "class": "sc-1eow4w5-3 hGpdBg"},
+        },
+    ]
+
+    # Create a database session
+    db = SessionLocal()
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for website in websites:
+                tasks.append(scrape_webiste(session, website, db))
+
+            await asyncio.gather(*tasks)
+            print("Scrapped")
+
+    except Exception as e:
+        print("Error:", e)
 
     finally:
         db.close()
 
 
-websites = [
-    {
-        "name": "engadget",
-        "url": "https://www.engadget.com/gaming/pc/",
-        "section_selector": {"tag": "ul", "class": "D(b) Jc(sb) Flw(w) M(0) P(0) List(n)"},
-        "article_selector": {"tag": "li", "class": "Mb(24px) Bxz(bb)"},
-        "headline_selector": "h1",
-        "thumbnail_selector": {"tag": "div", "class": "caas-img-container"},
-    },
-    {
-        "name": "kotaku",
-        "url": "https://kotaku.com/latest",
-        "section_selector": {"tag": "div", "class": "sc-17uq8ex-0 fakHlO"},
-        "article_selector": {"tag": "div", "class": "sc-3kpz0l-2 ciHPAq"},
-        "headline_selector": "h1",
-        "thumbnail_selector": {"tag": "div", "class": "sc-1eow4w5-3 hGpdBg"},
-    }
-]
-
-
-def main():
-    for website in websites:
-        scrape_webiste(website)
-    print("Scrapped")
-
-
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
