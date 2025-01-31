@@ -1,10 +1,8 @@
 from flask import Blueprint, jsonify
-from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
-from .database import SessionLocal
-from .models import Website, Article
-from .scraper import scrape_webiste, websites
 import subprocess
+from .database import SessionLocal
+from .models import Website
 
 
 main = Blueprint("main", __name__)
@@ -13,14 +11,13 @@ main = Blueprint("main", __name__)
 @main.route("/api/initialize", methods=["POST"])
 def initialize():
     subprocess.run(["python", "-m", "app.init_db"], check=True)
-    return jsonify({"message": "Database initialized."})
+    return jsonify({"message": "Database initialized."}), 200
 
 
 @main.route("/api/scrape", methods=["POST"])
 def scrape():
-    for website in websites:
-        scrape_webiste(website)
-    return jsonify({"message": "Scrapping completed successfully"}), 200
+    subprocess.run(["python", "-m", "app.scraper"], check=True)
+    return jsonify({"message": "Scrapping completed successfully."}), 200
 
 
 # Dependency to get the database session
