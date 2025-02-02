@@ -21,6 +21,7 @@ services:
       - "${BACKEND_PORTS}"
     depends_on:
       - db
+      - redis
     environment:
       FLASK_ENV: development
       FLASK_DEBUG: 1

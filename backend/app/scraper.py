@@ -25,7 +25,7 @@ async def scrape_website(website_data, db):
 
             website = db.query(Website).filter_by(
                 url=website_data["url"]).first()
-            
+
             if not website:
                 # Create a new website entry
                 website = Website(
@@ -35,6 +35,7 @@ async def scrape_website(website_data, db):
                     created_at=datetime.now(timezone.utc)
                 )
                 db.add(website)
+                db.commit()
 
             await scrape_articles(website_data, website.id, session, db)
 
@@ -48,7 +49,7 @@ async def scrape_articles(website_data, websiteID, session, db):
     try:
         html = await fetch(session, website_data["url"])
         soup = bs(html, "html.parser")
-        
+
         # Select the articles section
         section_tag, section_class = website_data["section_selector"][
             "tag"], website_data["section_selector"]["class"]
@@ -60,7 +61,7 @@ async def scrape_articles(website_data, websiteID, session, db):
             # Select the articles URL
             article_tag, article_class = website_data["article_selector"][
                 "tag"], website_data["article_selector"]["class"]
-            
+
             articles = soup.find_all(article_tag, article_class)
 
             # Check if articles is not empty
