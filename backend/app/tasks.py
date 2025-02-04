@@ -21,7 +21,7 @@ app.conf.update(
     enable_utc=True,
 )
 
-# Trigger Celery beat tasks every 8 hours
+# Trigger Celery beat tasks every 8 hours.
 app.conf.beat_schedule = {
     'scrape-every-8hours': {
         'task': 'app.tasks.scrape_website_task',
