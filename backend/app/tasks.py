@@ -43,7 +43,7 @@ websites = [
         "name": "engadget",
         "url": "https://www.engadget.com/gaming/pc/",
         "section_selector": {"tag": "ul", "class": "D(b) Jc(sb) Flw(w) M(0) P(0) List(n)"},
-        "article_selector": {"tag": "li", "class": "Mb(24px) Bxz(bb)"},
+        "article_selector": {"tag": "li", "class": "Mb"},
         "headline_selector": "h1",
         "thumbnail_selector": {"tag": "div", "class": "caas-img-container"},
     },
@@ -56,7 +56,6 @@ def scrape_website_task():
     try:
         for website in websites:
             asyncio.run(scrape_website(website, db))
-            db.commit()
     except Exception as e:
         db.rollback()
         print(f"Error occur {website["url"]}: {e}")
