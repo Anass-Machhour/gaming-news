@@ -108,7 +108,8 @@ async def scrape_website_info(session, website, db):
             if not favicon_tag:
                 favicon_tag = soup.find("link", rel="apple-touch-icon")
 
-            favicon_url = favicon_tag["href"] if favicon_tag else "No favicon found"
+            link = favicon_tag["href"] if favicon_tag else "No favicon found"
+            favicon_url = urljoin(website["url"], link)
             # Create a new website entry
             website_db = Website(
                 url=website["url"],
