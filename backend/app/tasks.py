@@ -47,6 +47,30 @@ websites = [
         "headline_selector": "h1",
         "thumbnail_selector": {"tag": "div", "class": "caas-img-container"},
     },
+    {
+        "name": "pcgamer",
+        "url": "https://www.pcgamer.com/games/",
+        "section_selector": {"tag": "div", "class": "listingResults"},
+        "article_selector": {"tag": "div", "class": "listingResult small result"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "widget-area p-u-1 p-u-md-2-3 p-u-lg-2-3 widget-area-g-md-vp-2-3 widget-area-g-lg-vp-2-3 widget-area-g-xl-vp-2-3 page-widget-area-16"},
+    },
+    {
+        "name": "polygon",
+        "url": "https://www.polygon.com/pc",
+        "section_selector": {"tag": "div", "class": "_11x6rb93"},
+        "article_selector": {"tag": "div", "class": "duet--content-cards--content-card"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "n4cvou0"},
+    },
+    {
+        "name": "gamesradar",
+        "url": "https://www.gamesradar.com/platforms/pc-gaming/",
+        "section_selector": {"tag": "div", "class": "listingResults"},
+        "article_selector": {"tag": "div", "class": "listingResult small result"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "widget-area p-u-1 p-u-md-2-3 p-u-lg-2-3 widget-area-g-md-vp-2-3 widget-area-g-lg-vp-2-3 widget-area-g-xl-vp-2-3 page-widget-area-16"},
+    },
 ]
 
 
