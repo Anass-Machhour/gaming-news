@@ -1,16 +1,25 @@
 FROM python:3.12.5-slim
 
-# Working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container
-COPY . .
+# Copy only the requirements file first
+COPY requirements.txt .
 
-# Install the needed packeges specified in the requirements.txt
+# Install dependencies as root
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
+# Copy the rest of the application code
+COPY . .
+
+# Create a non-root user
+RUN useradd -m appuser
+
+# Change ownership of the working directory to the non-root user
+RUN chown -R appuser:appuser /app
+
+# Switch to the non-root user
+USER appuser
 
 # Run the application with Gunicorn
-CMD ["gunicorn", "run:app", "--workers", "4", "--bind", "0.0.0.0:5000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "run:app"]

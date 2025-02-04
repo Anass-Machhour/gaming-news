@@ -17,6 +17,7 @@ services:
 
   backend:
     build: ./backend
+    user: "appuser"
     ports:
       - "${BACKEND_PORTS}"
     depends_on:
@@ -33,6 +34,7 @@ services:
 
   celery-worker:
     build: ./backend
+    user: "appuser"
     command: celery -A app.tasks worker --loglevel=info --pool=solo
     depends_on:
       - db
@@ -48,6 +50,7 @@ services:
 
   celery-beat:
     build: ./backend
+    user: "appuser"
     command: celery -A app.tasks beat --loglevel=info
     depends_on:
       - db
