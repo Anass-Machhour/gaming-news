@@ -21,7 +21,7 @@ app.conf.update(
     enable_utc=True,
 )
 
-# Trigger Celery beat tasks every 8 hours
+# Trigger Celery beat tasks every 8 hours.
 app.conf.beat_schedule = {
     'scrape-every-8hours': {
         'task': 'app.tasks.scrape_website_task',
@@ -43,9 +43,33 @@ websites = [
         "name": "engadget",
         "url": "https://www.engadget.com/gaming/pc/",
         "section_selector": {"tag": "ul", "class": "D(b) Jc(sb) Flw(w) M(0) P(0) List(n)"},
-        "article_selector": {"tag": "li", "class": "Mb(24px) Bxz(bb)"},
+        "article_selector": {"tag": "li", "class": "Mb"},
         "headline_selector": "h1",
         "thumbnail_selector": {"tag": "div", "class": "caas-img-container"},
+    },
+    {
+        "name": "pcgamer",
+        "url": "https://www.pcgamer.com/games/",
+        "section_selector": {"tag": "div", "class": "listingResults"},
+        "article_selector": {"tag": "div", "class": "listingResult small result"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "widget-area p-u-1 p-u-md-2-3 p-u-lg-2-3 widget-area-g-md-vp-2-3 widget-area-g-lg-vp-2-3 widget-area-g-xl-vp-2-3 page-widget-area-16"},
+    },
+    {
+        "name": "polygon",
+        "url": "https://www.polygon.com/pc",
+        "section_selector": {"tag": "div", "class": "_11x6rb93"},
+        "article_selector": {"tag": "div", "class": "duet--content-cards--content-card"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "n4cvou0"},
+    },
+    {
+        "name": "gamesradar",
+        "url": "https://www.gamesradar.com/platforms/pc-gaming/",
+        "section_selector": {"tag": "div", "class": "listingResults"},
+        "article_selector": {"tag": "div", "class": "listingResult small result"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "widget-area p-u-1 p-u-md-2-3 p-u-lg-2-3 widget-area-g-md-vp-2-3 widget-area-g-lg-vp-2-3 widget-area-g-xl-vp-2-3 page-widget-area-16"},
     },
 ]
 
@@ -56,7 +80,6 @@ def scrape_website_task():
     try:
         for website in websites:
             asyncio.run(scrape_website(website, db))
-            db.commit()
     except Exception as e:
         db.rollback()
         print(f"Error occur {website["url"]}: {e}")
