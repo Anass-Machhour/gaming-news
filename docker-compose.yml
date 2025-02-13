@@ -31,6 +31,13 @@ services:
     env_file:
       - .env
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
   celery-worker:
     build: ./backend
     command: celery -A app.tasks worker --loglevel=info --pool=solo
