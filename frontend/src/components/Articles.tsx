@@ -21,12 +21,16 @@ type WebsiteData = {
 
 async function Articles() {
 	try {
-		const data: WebsiteData[] = await fetch(
-			"http://127.0.0.1:5000/api/websites",
-			{
-				cache: "force-cache",
-			}
-		).then((res) => res.json());
+		const apiUrl = process.env.API_WEBSITE;
+
+		if (!apiUrl) {
+			throw new Error(
+				"API_WEBSITE is not defined in the environment variables."
+			);
+		}
+		const data: WebsiteData[] = await fetch(apiUrl, {
+			cache: "force-cache",
+		}).then((res) => res.json());
 
 		return (
 			<div className="flex gap-5 flex-wrap justify-center w-full px-10">
