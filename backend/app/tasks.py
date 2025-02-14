@@ -82,7 +82,7 @@ def scrape_website_task():
             asyncio.run(scrape_website(website, db))
     except Exception as e:
         db.rollback()
-        print(f"Error occur {website["url"]}: {e}")
+        print(f"Error occur {website['url']}: {e}")
     finally:
         db.close()
 
