@@ -22,7 +22,7 @@ async def scrape_website(website, db):
     except Exception as e:
         # In case of an error will Rollback
         db.rollback()
-        print(f"An error occurred scraping {website["url"]}: {e}")
+        print(f"An error occurred scraping {website['url']}: {e}")
 
 
 async def scrape_articles(website, websiteID, session, db):
