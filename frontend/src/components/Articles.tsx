@@ -1,5 +1,5 @@
-"use server";
 import Image from "next/image";
+import Link from "next/link";
 
 type Article = {
 	created_at: string; // ISO date string
@@ -46,7 +46,7 @@ async function Articles() {
 										key={index}
 										className="relative cursor-pointer max-w-[300px] sm:max-w-[350px]"
 									>
-										<a href={art.url} target="_blank">
+										<Link href={art.url} target="_blank">
 											<div className="absolute top-3 left-3 flex gap-1 items-center px-2 py-1 rounded-2xl bg-black/25 backdrop-blur-sm">
 												<Image
 													src={website.favicon_url}
@@ -68,7 +68,7 @@ async function Articles() {
 												className="w-full h-auto rounded-2xl ring-1 ring-blue-500 transition-all hover:ring-4"
 											/>
 											<h2 className="truncate py-4 text-sm">{art.headline}</h2>
-										</a>
+										</Link>
 									</article>
 								);
 							})}
@@ -78,6 +78,7 @@ async function Articles() {
 			</div>
 		);
 	} catch (error) {
+		console.log(error)
 		return (
 			<h2 className="text-[3vw] text-center">Sorry no articles found :/</h2>
 		);
