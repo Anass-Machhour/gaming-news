@@ -24,7 +24,7 @@ services:
       - db
       - redis
     environment:
-      FLASK_ENV: development
+      FLASK_ENV: ${FLASK_ENV}
       FLASK_DEBUG: 1
       DATABASE_URL: "${DATABASE_URL}"
       CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
@@ -47,7 +47,7 @@ services:
       - db
       - redis
     environment:
-      FLASK_ENV: development
+      FLASK_ENV: ${FLASK_ENV}
       FLASK_DEBUG: 1
       DATABASE_URL: "${DATABASE_URL}"
       CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
@@ -63,7 +63,7 @@ services:
       - db
       - redis
     environment:
-      FLASK_ENV: development
+      FLASK_ENV: ${FLASK_ENV}
       FLASK_DEBUG: 1
       DATABASE_URL: "${DATABASE_URL}"
       CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
