@@ -44,7 +44,7 @@ async function Articles() {
 								return (
 									<article
 										key={index}
-										className="relative cursor-pointer max-w-[300px] sm:max-w-[350px]"
+										className="relative cursor-pointer w-[300px] sm:w-[350px]"
 									>
 										<Link href={art.url} target="_blank">
 											<div className="absolute top-3 left-3 flex gap-1 items-center px-2 py-1 rounded-2xl bg-black/25 backdrop-blur-sm">
@@ -65,7 +65,7 @@ async function Articles() {
 												title={art.headline}
 												width={400}
 												height={400}
-												className="w-full h-auto rounded-2xl ring-1 ring-blue-500 transition-all hover:ring-4"
+												className="w-[300px] sm:w-[350px] h-auto rounded-2xl ring-1 ring-blue-500 transition-all hover:ring-4"
 											/>
 											<h2 className="truncate py-4 text-sm">{art.headline}</h2>
 										</Link>
