@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload
 import subprocess
 from .database import SessionLocal
 from .models import Website
-from .tasks import scrape_website_task
+from .scraper import start_scrape
 from .serializer import WebsiteSchema
 
 
@@ -18,7 +18,7 @@ def initialize():
 
 @main.route("/api/scrape", methods=["POST"])
 def scrape():
-    scrape_website_task.delay()
+    start_scrape()
     return jsonify({"message": "Scrapping started."}), 200
 
 
