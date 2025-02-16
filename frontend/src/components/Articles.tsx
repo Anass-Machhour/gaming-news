@@ -29,7 +29,7 @@ async function Articles() {
 			);
 		}
 		const data: WebsiteData[] = await fetch(apiUrl, {
-			cache: "force-cache",
+			cache: "no-cache",
 		}).then((res) => res.json());
 
 		return (
@@ -65,7 +65,7 @@ async function Articles() {
 												title={art.headline}
 												width={400}
 												height={400}
-												className="w-[300px] sm:w-[350px] h-auto rounded-2xl ring-1 ring-blue-500 transition-all hover:ring-4"
+												className="w-[300px] sm:w-[350px] h-40 sm:h-48 rounded-2xl ring-1 ring-blue-500 transition-all hover:ring-4"
 											/>
 											<h2 className="truncate py-4 text-sm">{art.headline}</h2>
 										</Link>
