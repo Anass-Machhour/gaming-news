@@ -4,7 +4,6 @@ import asyncio
 from bs4 import BeautifulSoup as bs
 from datetime import datetime, timezone
 import re
-import schedule
 import threading
 import time
 from urllib.parse import urljoin
@@ -224,25 +223,21 @@ websites = [
 
 
 async def start_scrape():
-    with SessionLocal() as db:
+    async with SessionLocal() as db:
         try:
-            for website in websites:
-                print("Scrap started...")
-                tasks.append(scrape_website(website, db))
-                await asyncio.gather(*tasks)
+            tasks = [scrape_website(website, db) for website in websites]
+            await asyncio.gather(*tasks)
         except Exception as e:
             db.rollback()
-            print(f"Error occurred with {website['url']}: {e}")
+            print(f"Error occurred: {e}")
     print("Scrap ended...")
-
-
-schedule.every(12).minutes.do(start_scrape)
 
 
 def run_scheduler():
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+        asyncio.run(start_scrape())
+        time.sleep(12 * 60)
 
 
-threading.Thread(target=run_scheduler).start()
+# Run the scheduler in a separate thread
+threading.Thread(target=run_scheduler, daemon=True).start()
