@@ -1,9 +1,10 @@
+import asyncio
 from flask import Blueprint, jsonify
 from sqlalchemy.orm import joinedload
 import subprocess
 from .database import SessionLocal
 from .models import Website
-from .scraper import run_scheduler
+from .scraper import start_scrape
 from .serializer import WebsiteSchema
 
 
@@ -18,7 +19,7 @@ def initialize():
 
 @main.route("/api/scrape", methods=["POST"])
 def scrape():
-    run_scheduler()
+    asyncio.run(start_scrape())
     return jsonify({"message": "Scrapping started."}), 200
 
 

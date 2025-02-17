@@ -223,7 +223,7 @@ websites = [
 
 
 async def start_scrape():
-    async with SessionLocal() as db:
+    with SessionLocal() as db:
         try:
             tasks = [scrape_website(website, db) for website in websites]
             await asyncio.gather(*tasks)
