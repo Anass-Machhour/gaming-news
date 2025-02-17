@@ -1,3 +1,4 @@
+from asyncio import tasks
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup as bs
@@ -222,18 +223,17 @@ websites = [
 ]
 
 
-def start_scrape():
-    db = SessionLocal()
-    try:
-        for website in websites:
-            print("Scrap started...")
-            asyncio.run(scrape_website(website, db))
-    except Exception as e:
-        db.rollback()
-        print(f"Error occur {website['url']}: {e}")
-    finally:
-        db.close()
-        print("Scrap ended...")
+async def start_scrape():
+    with SessionLocal() as db:
+        try:
+            for website in websites:
+                print("Scrap started...")
+                tasks.append(scrape_website(website, db))
+                await asyncio.gather(*tasks)
+        except Exception as e:
+            db.rollback()
+            print(f"Error occurred with {website['url']}: {e}")
+    print("Scrap ended...")
 
 
 schedule.every(12).minutes.do(start_scrape)
