@@ -230,14 +230,16 @@ async def start_scrape():
         except Exception as e:
             db.rollback()
             print(f"Error occurred: {e}")
-    print("Scrap ended...")
+    print("Scraping ended...")
 
 
-def run_scheduler():
+async def run_scheduler():
     while True:
-        asyncio.run(start_scrape())
-        time.sleep(12 * 60)
-
+        await start_scrape()
+        await asyncio.sleep(12 * 60)  # Sleep for 12 minutes (non-blocking)
 
 # Run the scheduler in a separate thread
-threading.Thread(target=run_scheduler, daemon=True).start()
+def start_scheduler_thread():
+    asyncio.run(run_scheduler())
+
+threading.Thread(target=start_scheduler_thread, daemon=True).start()
