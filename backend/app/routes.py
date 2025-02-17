@@ -32,8 +32,8 @@ def get_db():
         db.close()
 
 
-@main.route("/api/websites", methods=["GET"])
-def get_articles():
+@main.route("/api/news", methods=["GET"])
+def get_news():
     db = next(get_db())
     websites = db.query(Website).options(joinedload(Website.articles)).all()
     

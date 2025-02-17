@@ -12,7 +12,7 @@ services:
     build: ./backend
     user: "appuser"
     ports:
-      - "${BACKEND_PORTS}"
+      - "5000:5000"
     depends_on:
       - db
     environment:
