@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
 				hostname: "www.polygon.com",
 				pathname: "/**",
 			},
+			{
+				protocol: "https",
+				hostname: "platform.polygon.com",
+				pathname: "/**",
+			},
 		],
 	},
 };

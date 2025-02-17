@@ -63,6 +63,7 @@ async function Articles() {
 										alt={`${website!.name}website Logo icon`}
 										width={28}
 										height={28}
+										priority
 										className="size-5 rounded-full border"
 									/>
 									<h3 className="truncate max-w-36 text-xs">{website!.name}</h3>
@@ -73,6 +74,7 @@ async function Articles() {
 									title={art.headline}
 									width={400}
 									height={400}
+									priority
 									className="w-[300px] sm:w-[350px] h-40 sm:h-48 rounded-2xl ring-1 ring-blue-500 transition-all hover:ring-4"
 								/>
 								<h2 className="truncate py-4 text-sm">{art.headline}</h2>
