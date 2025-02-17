@@ -236,7 +236,7 @@ def start_scrape():
         print("Scrap ended...")
 
 
-schedule.every(28).minutes.do(start_scrape)
+schedule.every(12).minutes.do(start_scrape)
 
 
 def run_scheduler():
