@@ -3,10 +3,12 @@ import asyncio
 from bs4 import BeautifulSoup as bs
 from datetime import datetime, timezone
 import re
+import schedule
+import threading
+import time
 from urllib.parse import urljoin
 from .database import SessionLocal
 from .models import Website, Article
-
 
 
 async def fetch(session, url):
@@ -52,7 +54,7 @@ async def scrape_articles(website, websiteID, session, db):
             if articles:
                 for article in articles[:10]:
                     article_url = scrape_article_url(website, article)
-                    
+
                     if type(article_url) == TypeError:
                         print(article_url)
                         continue
@@ -70,7 +72,7 @@ async def scrape_articles(website, websiteID, session, db):
 
                         thumbnail = scrape_thumbnail(
                             website, article_url, soup)
-                        
+
                         if not thumbnail or not headline:
                             continue
 
@@ -224,9 +226,23 @@ def start_scrape():
     db = SessionLocal()
     try:
         for website in websites:
+            print("Scrap started...")
             asyncio.run(scrape_website(website, db))
     except Exception as e:
         db.rollback()
         print(f"Error occur {website['url']}: {e}")
     finally:
         db.close()
+        print("Scrap ended...")
+
+
+schedule.every(28).minutes.do(start_scrape)
+
+
+def run_scheduler():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+
+threading.Thread(target=run_scheduler).start()
