@@ -16,7 +16,6 @@ engine = create_engine(
     pool_size=10,          # Number of connections to maintain in the pool
     max_overflow=20,       # Additional connections allowed beyond pool_size
     pool_timeout=30,       # Timeout in seconds for getting a connection
-    pool_recycle=3600,     # Recycle connections after 1 hour to avoid long-lived stale connections
     pool_pre_ping=True     # Automatically test connections before using them
 )
 
