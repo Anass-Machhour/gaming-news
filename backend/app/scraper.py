@@ -238,7 +238,7 @@ async def start_scrape():
 async def run_scheduler():
     while True:
         await start_scrape()
-        await asyncio.sleep(15)
+        await asyncio.sleep(12 * 60)
 
 # Run the scheduler in a separate thread
 def start_scheduler_thread():
