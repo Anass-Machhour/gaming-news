@@ -1,0 +1,13 @@
+name: Scrape News Every 13 Minutes
+
+on:
+  schedule:
+    - cron: '*/13 * * * *' # Runs every 13 minutes
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Scrape
+        run: |
+          curl -X POST ${{ secrets.BACKEND_URL }}/api/scrape

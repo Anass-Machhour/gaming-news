@@ -11,14 +11,15 @@ The **Gaming News Aggregator** is a web application that scrapes gaming news(cur
 - **Database**: PostgreSQL (hosted on Supabase)
 - **Web Scraping**: BeautifulSoup, aiohttp
 - **Deployment**: Docker, Render (Flask), Vercel (Next.js)
+- **Automation**: GitHub Actions
 
 ## **Features**
 
-- Scrapes gaming news from multiple sources every 12 minutes.
+- Scrapes gaming news from multiple sources.
 - Stores scraped articles in a PostgreSQL database.
 - RESTful API to fetch the latest gaming news.
 - User-friendly interface built with Next.js and Tailwind CSS.
-- Features planned for future: user authentication, search, notifications, and an analytics dashboard.
+- Automated scraping using GitHub Actions every 13 minutes.
 
 ### Planned Features:
 
@@ -69,6 +70,34 @@ The **Gaming News Aggregator** is a web application that scrapes gaming news(cur
    ```bash
    GET http://localhost:5000/news
    ```
+
+### **GitHub Actions**
+
+This project utilizes GitHub Actions to automate the scraping process every 13 minutes and keep the backend active (since the Render free tier server will shut down due to inactivity after 15 minutes without receiving any requests).
+
+#### **How it works**:
+1. The scraping process is triggered via a POST request to the `/api/scrape` endpoint.
+2. The workflow is defined in `.github/workflows/scraping.yml`.
+3. Go to repository settings > Environments > Environment secrets > Add environment secret > Add name and value > Click Add secret.
+
+#### **GitHub Actions Workflow**:
+This workflow sends a `POST` request every 13 minutes to trigger the scraping process.
+
+```yaml
+name: Scrape News Every 13 Minutes
+
+on:
+  schedule:
+    - cron: '*/13 * * * *'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Scrape
+        run: |
+          curl -X POST ${{ secrets.SECRET_NAME }}/api/scrape
+```
 
 ## **Deployment**
 

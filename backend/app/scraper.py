@@ -1,11 +1,8 @@
-from asyncio import tasks
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup as bs
 from datetime import datetime, timezone
 import re
-import threading
-import time
 from urllib.parse import urljoin
 from .database import SessionLocal
 from .models import Website, Article
@@ -232,16 +229,4 @@ async def start_scrape():
             print(f"Error occurred: {e}")
         finally:
             db.close()
-            print("Scraping ended...")
-
-
-async def run_scheduler():
-    while True:
-        await start_scrape()
-        await asyncio.sleep(12 * 60)
-
-# Run the scheduler in a separate thread
-def start_scheduler_thread():
-    asyncio.run(run_scheduler())
-
-threading.Thread(target=start_scheduler_thread, daemon=True).start()
+            print("======Scraping ended======")
