@@ -1,8 +1,10 @@
 import aiohttp
+import asyncio
 from bs4 import BeautifulSoup as bs
 from datetime import datetime, timezone
 import re
 from urllib.parse import urljoin
+from .database import SessionLocal
 from .models import Website, Article
 
 
@@ -22,7 +24,7 @@ async def scrape_website(website, db):
     except Exception as e:
         # In case of an error will Rollback
         db.rollback()
-        print(f"An error occurred scraping {website["url"]}: {e}")
+        print(f"An error occurred scraping {website['url']}: {e}")
 
 
 async def scrape_articles(website, websiteID, session, db):
@@ -49,7 +51,7 @@ async def scrape_articles(website, websiteID, session, db):
             if articles:
                 for article in articles[:10]:
                     article_url = scrape_article_url(website, article)
-                    
+
                     if type(article_url) == TypeError:
                         print(article_url)
                         continue
@@ -67,7 +69,7 @@ async def scrape_articles(website, websiteID, session, db):
 
                         thumbnail = scrape_thumbnail(
                             website, article_url, soup)
-                        
+
                         if not thumbnail or not headline:
                             continue
 
@@ -171,3 +173,60 @@ def scrape_thumbnail(website, article, soup):
     except Exception as e:
         print(f'An error occurred scraping thumbnail for {article}: {e}')
         return None
+
+
+websites = [
+    {
+        "name": "kotaku",
+        "url": "https://kotaku.com/culture/news",
+        "section_selector": {"tag": "div", "class": "sc-17uq8ex-0 fakHlO"},
+        "article_selector": {"tag": "div", "class": "sc-cw4lnv-12 kQoJyO"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "sc-1eow4w5-3 hGpdBg"},
+    },
+    {
+        "name": "engadget",
+        "url": "https://www.engadget.com/gaming/pc/",
+        "section_selector": {"tag": "ul", "class": "D(b) Jc(sb) Flw(w) M(0) P(0) List(n)"},
+        "article_selector": {"tag": "li", "class": "Mb"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "caas-img-container"},
+    },
+    {
+        "name": "pcgamer",
+        "url": "https://www.pcgamer.com/games/",
+        "section_selector": {"tag": "div", "class": "listingResults"},
+        "article_selector": {"tag": "div", "class": "listingResult small result"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "widget-area p-u-1 p-u-md-2-3 p-u-lg-2-3 widget-area-g-md-vp-2-3 widget-area-g-lg-vp-2-3 widget-area-g-xl-vp-2-3 page-widget-area-16"},
+    },
+    {
+        "name": "polygon",
+        "url": "https://www.polygon.com/pc",
+        "section_selector": {"tag": "div", "class": "_11x6rb93"},
+        "article_selector": {"tag": "div", "class": "duet--content-cards--content-card"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "n4cvou0"},
+    },
+    {
+        "name": "gamesradar",
+        "url": "https://www.gamesradar.com/platforms/pc-gaming/",
+        "section_selector": {"tag": "div", "class": "listingResults"},
+        "article_selector": {"tag": "div", "class": "listingResult small result"},
+        "headline_selector": "h1",
+        "thumbnail_selector": {"tag": "div", "class": "widget-area p-u-1 p-u-md-2-3 p-u-lg-2-3 widget-area-g-md-vp-2-3 widget-area-g-lg-vp-2-3 widget-area-g-xl-vp-2-3 page-widget-area-16"},
+    },
+]
+
+
+async def start_scrape():
+    with SessionLocal() as db:
+        try:
+            tasks = [scrape_website(website, db) for website in websites]
+            await asyncio.gather(*tasks)
+        except Exception as e:
+            db.rollback()
+            print(f"Error occurred: {e}")
+        finally:
+            db.close()
+            print("======Scraping ended======")

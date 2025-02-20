@@ -1,9 +1,10 @@
+import asyncio
 from flask import Blueprint, jsonify
 from sqlalchemy.orm import joinedload
 import subprocess
 from .database import SessionLocal
 from .models import Website
-from .tasks import scrape_website_task
+from .scraper import start_scrape
 from .serializer import WebsiteSchema
 
 
@@ -18,7 +19,7 @@ def initialize():
 
 @main.route("/api/scrape", methods=["POST"])
 def scrape():
-    scrape_website_task.delay()
+    asyncio.run(start_scrape())
     return jsonify({"message": "Scrapping started."}), 200
 
 
@@ -31,8 +32,8 @@ def get_db():
         db.close()
 
 
-@main.route("/api/websites", methods=["GET"])
-def get_articles():
+@main.route("/api/news", methods=["GET"])
+def get_news():
     db = next(get_db())
     websites = db.query(Website).options(joinedload(Website.articles)).all()
     
