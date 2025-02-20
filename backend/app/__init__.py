@@ -6,7 +6,7 @@ import logging
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins=["https://gaming-news-opal.vercel.app", "http://localhost:3000"])
 
     from .routes import main
     app.register_blueprint(main)

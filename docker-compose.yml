@@ -8,27 +8,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:7.4.2
-    ports:
-      - "${REDIS_PORTS}"
-    volumes:
-      - redis_data:/data
-
   backend:
     build: ./backend
     user: "appuser"
     ports:
-      - "${BACKEND_PORTS}"
+      - "5000:5000"
     depends_on:
       - db
-      - redis
     environment:
       FLASK_ENV: ${FLASK_ENV}
       FLASK_DEBUG: 1
       DATABASE_URL: "${DATABASE_URL}"
-      CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
-      CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
     env_file:
       - .env
 
@@ -38,39 +28,8 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-
-  celery-worker:
-    build: ./backend
-    user: "appuser"
-    command: celery -A app.tasks worker --loglevel=info --pool=solo
-    depends_on:
-      - db
-      - redis
-    environment:
-      FLASK_ENV: ${FLASK_ENV}
-      FLASK_DEBUG: 1
-      DATABASE_URL: "${DATABASE_URL}"
-      CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
-      CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
-    env_file:
-      - .env
-
-  celery-beat:
-    build: ./backend
-    user: "appuser"
-    command: celery -A app.tasks beat --loglevel=info
-    depends_on:
-      - db
-      - redis
-    environment:
-      FLASK_ENV: ${FLASK_ENV}
-      FLASK_DEBUG: 1
-      DATABASE_URL: "${DATABASE_URL}"
-      CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
-      CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
     env_file:
       - .env
 
 volumes:
   postgres_data:
-  redis_data:
