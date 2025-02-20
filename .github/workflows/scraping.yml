@@ -2,7 +2,7 @@ name: Scrape News Every 13 Minutes
 
 on:
   schedule:
-    - cron: '*/13 * * * *' # Runs every 13 minutes
+    - cron: '*/5 * * * *' # Runs every 13 minutes
   push:
     branches:
       - main

@@ -78,7 +78,7 @@ This project utilizes GitHub Actions to automate the scraping process every 13 m
 #### **How it works**:
 1. The scraping process is triggered via a POST request to the `/api/scrape` endpoint.
 2. The workflow is defined in `.github/workflows/scraping.yml`.
-3. Go to repository settings > Environments > Environment secrets > Add environment secret > Add name and value > Click Add secret.
+3. Go to repository settings > Secrets and variables > Actions > Add new repository secret > Add name and value > Click Add secret.
 
 #### **GitHub Actions Workflow**:
 This workflow sends a `POST` request every 13 minutes to trigger the scraping process.
@@ -87,16 +87,21 @@ This workflow sends a `POST` request every 13 minutes to trigger the scraping pr
 name: Scrape News Every 13 Minutes
 
 on:
-  schedule:
-    - cron: '*/13 * * * *'
+   schedule:
+      - cron: '*/13 * * * *'
+   push:
+    branches:
+      - main
+      - develop
+      - backend/*
 
 jobs:
-  scrape:
-    runs-on: ubuntu-latest
-    steps:
+   scrape:
+      runs-on: ubuntu-latest
+      steps:
       - name: Trigger Scrape
-        run: |
-          curl -X POST ${{ secrets.SECRET_NAME }}/api/scrape
+         run: |
+            curl -X POST ${{ secrets.SECRET_NAME }}/api/scrape
 ```
 
 ## **Deployment**
