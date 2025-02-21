@@ -40,7 +40,10 @@ def get_news():
     per_page = request.args.get('per_page', 32, type=int)
     start = (page - 1) * per_page
 
-    websites = db.query(Website).all()
+    total_articles = db.query(Article).count()
+
+    total_pages = (total_articles + per_page - 1) // per_page
+
     articles = db.query(Article) \
         .order_by(Article.created_at.desc()).offset(start).limit(per_page).all()
 
@@ -51,6 +54,7 @@ def get_news():
             articles_by_website[article.website_id] = []
         articles_by_website[article.website_id].append(article)
 
+    websites = db.query(Website).all()
     websites_per_page: List[Website] = []
     for website in websites:
         websites_per_page.append({
@@ -65,7 +69,10 @@ def get_news():
     schema = WebsiteSchema(many=True)
     results = schema.dump(websites_per_page)
 
-    return jsonify(results)
+    return jsonify({
+        "total_pages": total_pages,
+        "results": results,
+    })
 
 
 @main.route("/")
