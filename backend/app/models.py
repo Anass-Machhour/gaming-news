@@ -16,7 +16,6 @@ class Website(Base):
         DateTime, default=datetime.now(timezone.utc))
 
     articles: Mapped[List["Article"]] = relationship(
-        order_by="desc(Article.created_at)",
         back_populates="website",
         cascade="all, delete-orphan")
 
