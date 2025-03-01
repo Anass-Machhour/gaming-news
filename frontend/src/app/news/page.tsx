@@ -10,6 +10,9 @@ export default function Home() {
 		lst.push(text[i]);
 	}
 
+	
+
+
 	return (
 		<main className="grid place-content-center min-h-[100dvh] w-full pb-32">
 			<main className="flex flex-col min-h-screen w-screen px-3">
@@ -33,7 +36,7 @@ export default function Home() {
 					</div>
 				</section>
 				<section className="w-full pt-[10dvh]">
-					<p className="text-xl text-center">Redirecting...</p>
+					<Articles />
 				</section>
 			</main>
 		</main>
