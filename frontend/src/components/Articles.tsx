@@ -73,7 +73,7 @@ function Articles() {
 		fetchData();
 		router.push(`/news?${pageParams.toString()}`);
 		setIsLoading(false);
-	}, [page]);
+	}, [page, apiUrl, pageParams, router]);
 
 	const handlePrevious = () => {
 		if (page > 1) {
