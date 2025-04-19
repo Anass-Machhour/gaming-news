@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup as bs
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import re
 from urllib.parse import urljoin
 from .database import SessionLocal
@@ -13,13 +13,13 @@ async def fetch(session, url):
         return await response.text()
 
 
-async def scrape_website(website, db):
+async def scrape_website(website):
     try:
         async with aiohttp.ClientSession() as session:
-
-            website_id = await scrape_website_info(session, website, db)
-
-            await scrape_articles(website, website_id, session, db)
+            with SessionLocal() as db:
+                website_id = await scrape_website_info(session, website, db)
+                await scrape_articles(website, website_id, session, db)
+                db.commit()
 
     except Exception as e:
         # In case of an error will Rollback
@@ -175,6 +175,18 @@ def scrape_thumbnail(website, article, soup):
         return None
 
 
+def delete_old_articles():
+    try:
+        with SessionLocal() as db:
+            last_2_days = datetime.now(timezone.utc) - timedelta(days=2)
+            db.query(Article).filter(
+                Article.created_at <= last_2_days).delete()
+            db.commit()
+            print("!!!!!!!-Delete completed-!!!!!!!")
+    except Exception as e:
+        print(f"Error occurred while deleting old articles: {e}")
+
+
 websites = [
     {
         "name": "kotaku",
@@ -220,13 +232,14 @@ websites = [
 
 
 async def start_scrape():
-    with SessionLocal() as db:
-        try:
-            tasks = [scrape_website(website, db) for website in websites]
-            await asyncio.gather(*tasks)
-        except Exception as e:
-            db.rollback()
-            print(f"Error occurred: {e}")
-        finally:
-            db.close()
-            print("======Scraping ended======")
+    try:
+        tasks = [scrape_website(website)
+                 for website in websites]  # no db passed in
+        await asyncio.gather(*tasks)
+
+        # Call the cleanup (can be async if needed)
+        delete_old_articles()
+
+        print("======Scraping ended======")
+    except Exception as e:
+        print(f"Error occurred: {e}")
