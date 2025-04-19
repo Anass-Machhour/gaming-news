@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type ArticleType = {
@@ -27,28 +27,20 @@ type DataType = {
 	results: WebsiteType[];
 };
 
-function Articles() {
+function Articles({ getData }: { getData: (page: number) => Promise<any> }) {
 	const [articles, setArticles] = useState<ArticleType[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [totalPages, setTotalPages] = useState(1);
 	const [websites, setWebsites] = useState<WebsiteType[]>([]);
-	
-	const router = useRouter();
-	const pageParams = new URLSearchParams(useSearchParams());	
 	const [page, setPage] = useState(1);
 
-	const apiUrl = `${process.env.NEXT_PUBLIC_API_WEBSITE}/api/news?page=${page}`;
+	const router = useRouter();
+	const pageParams = useSearchParams();
 
 	useEffect(() => {
-
 		const fetchData = async () => {
 			try {
-				if (!apiUrl) {
-					console.error("apiURL not found");
-				}
-
-				const response = await fetch(apiUrl, { cache: "no-cache" });
-				const data: DataType = await response.json();
+				const data: DataType = await getData(page);
 
 				const websites: WebsiteType[] = data.results;
 
@@ -71,16 +63,25 @@ function Articles() {
 			}
 		};
 		fetchData();
-		router.push(`/news?${pageParams.toString()}`);
 		setIsLoading(false);
-	}, [page, apiUrl, pageParams, router]);
+		router.push(`/news?page=${page}`);
+	}, [page, router]);
+
+	const createQueryString = useCallback(
+		(name: string, value: string) => {
+			const params = new URLSearchParams(pageParams.toString());
+			params.set(name, value);
+
+			return params.toString();
+		},
+		[pageParams]
+	);
 
 	const handlePrevious = () => {
 		if (page > 1) {
 			setPage(page - 1);
 		}
-		pageParams.set("page", page.toString());
-		router.push(`/news?${pageParams.toString()}`);
+		router.push(`/news?${createQueryString("page", page.toString())}`);
 		setIsLoading(true);
 	};
 
@@ -88,8 +89,7 @@ function Articles() {
 		if (page < totalPages) {
 			setPage(page + 1);
 		}
-		pageParams.set("page", page.toString());
-		router.push(`/news?${pageParams.toString()}`);
+		router.push(`/news?${createQueryString("page", page.toString())}`);
 		setIsLoading(true);
 	};
 

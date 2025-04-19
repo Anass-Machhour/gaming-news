@@ -1,5 +1,6 @@
-import Articles from "@/components/Articles";
+"use client"
 import { JSX } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
 	const text: string = "Gaming News";
@@ -9,6 +10,9 @@ export default function Home() {
 	for (let i = 0; i < length; i++) {
 		lst.push(text[i]);
 	}
+
+	const router = useRouter()
+	router.push("/news")
 
 	return (
 		<main className="grid place-content-center min-h-[100dvh] w-full pb-32">
