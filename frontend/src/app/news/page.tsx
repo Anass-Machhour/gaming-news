@@ -14,7 +14,7 @@ export default async function Home() {
 	const fetchData = async () => {
 		"use server";
 		try {
-			const apiUrl = `${process.env.NEXT_PUBLIC_API_WEBSITE}/api/allnews`;
+			const apiUrl = `${process.env.API_WEBSITE}/api/allnews`;
 			if (!apiUrl) {
 				console.error("apiURL not found");
 			}
