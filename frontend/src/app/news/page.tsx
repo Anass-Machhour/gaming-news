@@ -1,8 +1,7 @@
-"use client"
+import Articles from "@/components/Articles";
 import { JSX } from "react";
-import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
 	const text: string = "Gaming News";
 	const length = text.length;
 	const lst: string[] = [];
@@ -11,8 +10,24 @@ export default function Home() {
 		lst.push(text[i]);
 	}
 
-	const router = useRouter()
-	router.push("/news")
+
+	const fetchData = async () => {
+		"use server";
+		try {
+			const apiUrl = `${process.env.NEXT_PUBLIC_API_WEBSITE}/api/allnews`;
+			if (!apiUrl) {
+				console.error("apiURL not found");
+			}
+			const response = await fetch(apiUrl, { cache: "no-cache" });
+
+			if (!response.ok) throw new Error('Login failed')
+
+			return response.json();
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 
 	return (
 		<main className="grid place-content-center min-h-[100dvh] w-full pb-32">
@@ -37,7 +52,7 @@ export default function Home() {
 					</div>
 				</section>
 				<section className="w-full pt-[10dvh]">
-					<p className="text-xl text-center">Redirecting...</p>
+					<Articles getData={fetchData} />
 				</section>
 			</main>
 		</main>
