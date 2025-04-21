@@ -34,7 +34,7 @@ def get_db():
 
 
 @main.route("/api/news", methods=["GET"])
-def get_news():
+def get_news_per_page():
     db = next(get_db())
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 32, type=int)
@@ -74,6 +74,38 @@ def get_news():
         "results": results,
     })
 
+
+@main.route("/api/allnews", methods=["GET"])
+def get_all_news():
+    db = next(get_db())
+
+    articles = db.query(Article).order_by(Article.created_at.desc()).all()
+
+    # Dictionary for articles by website_id, like grouping articles of each website for efficient lookup.
+    articles_by_website = {}
+    for article in articles:
+        if article.website_id not in articles_by_website:
+            articles_by_website[article.website_id] = []
+        articles_by_website[article.website_id].append(article)
+
+    websites = db.query(Website).all()
+    news = []
+    for website in websites:
+        news.append({
+            "id": website.id,
+            "name": website.name,
+            "url": website.url,
+            "favicon_url": website.favicon_url,
+            "created_at": website.created_at,
+            "articles": [article for article in articles_by_website.get(website.id, [])]
+        })
+
+    schema = WebsiteSchema(many=True)
+    results = schema.dump(news)
+
+    return jsonify({
+        "results": results,
+    })
 
 @main.route("/")
 def home():
