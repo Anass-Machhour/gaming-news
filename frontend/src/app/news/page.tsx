@@ -11,10 +11,10 @@ export default async function Home() {
 	}
 
 
-	const fetchData = async (page: number) => {
+	const fetchData = async () => {
 		"use server";
 		try {
-			const apiUrl = `${process.env.NEXT_PUBLIC_API_WEBSITE}/api/news?page=${page}`;
+			const apiUrl = `${process.env.NEXT_PUBLIC_API_WEBSITE}/api/allnews`;
 			if (!apiUrl) {
 				console.error("apiURL not found");
 			}

@@ -1,8 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState} from "react";
 
 type ArticleType = {
 	created_at: string; // ISO 8601 format date string
@@ -27,20 +26,15 @@ type DataType = {
 	results: WebsiteType[];
 };
 
-function Articles({ getData }: { getData: (page: number) => Promise<any> }) {
-	const [articles, setArticles] = useState<ArticleType[]>([]);
+function Articles({ getData }: { getData: () => Promise<any> }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const [totalPages, setTotalPages] = useState(1);
+	const [articles, setArticles] = useState<ArticleType[]>([]);
 	const [websites, setWebsites] = useState<WebsiteType[]>([]);
-	const [page, setPage] = useState(1);
-
-	const router = useRouter();
-	const pageParams = useSearchParams();
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const data: DataType = await getData(page);
+				const data: DataType = await getData();
 
 				const websites: WebsiteType[] = data.results;
 
@@ -56,7 +50,6 @@ function Articles({ getData }: { getData: (page: number) => Promise<any> }) {
 					);
 				};
 				setArticles(sortArticlesByDate(websites));
-				setTotalPages(data.total_pages);
 				setWebsites(websites);
 			} catch (error) {
 				console.error(error);
@@ -64,34 +57,7 @@ function Articles({ getData }: { getData: (page: number) => Promise<any> }) {
 		};
 		fetchData();
 		setIsLoading(false);
-		router.push(`/news?page=${page}`);
-	}, [page, router]);
-
-	const createQueryString = useCallback(
-		(name: string, value: string) => {
-			const params = new URLSearchParams(pageParams.toString());
-			params.set(name, value);
-
-			return params.toString();
-		},
-		[pageParams]
-	);
-
-	const handlePrevious = () => {
-		if (page > 1) {
-			setPage(page - 1);
-		}
-		router.push(`/news?${createQueryString("page", page.toString())}`);
-		setIsLoading(true);
-	};
-
-	const handleNext = () => {
-		if (page < totalPages) {
-			setPage(page + 1);
-		}
-		router.push(`/news?${createQueryString("page", page.toString())}`);
-		setIsLoading(true);
-	};
+	}, []);
 
 	if (isLoading || articles.length === 0) {
 		return <p className="text-xl text-center">Loading...</p>;
@@ -125,11 +91,10 @@ function Articles({ getData }: { getData: (page: number) => Promise<any> }) {
 										src={art.thumbnail_url}
 										alt={art.headline}
 										title={art.headline}
-										sizes="400px"
-										quality={100}
+										quality={75}
 										fill
 										priority
-										className="bg-cover bg-center"
+										className="object-cover"
 									/>
 								</div>
 								<h2 title={art.headline} className="truncate py-4 text-sm">
@@ -139,17 +104,6 @@ function Articles({ getData }: { getData: (page: number) => Promise<any> }) {
 						</article>
 					);
 				})}
-			</div>
-			<div className={`${isLoading ? "hidden" : "flex"} flex-row gap-5`}>
-				<button disabled={page === 1} onClick={handlePrevious}>
-					q
-				</button>
-				<p>
-					{page}/{totalPages}
-				</p>
-				<button disabled={page === totalPages} onClick={handleNext}>
-					p
-				</button>
 			</div>
 		</div>
 	);
