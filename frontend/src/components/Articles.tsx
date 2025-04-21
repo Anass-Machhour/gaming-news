@@ -26,7 +26,7 @@ type DataType = {
 	results: WebsiteType[];
 };
 
-function Articles({ getData }: { getData: () => Promise<any> }) {
+function Articles({ getData }: { getData: () => Promise<DataType> }) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [articles, setArticles] = useState<ArticleType[]>([]);
 	const [websites, setWebsites] = useState<WebsiteType[]>([]);
@@ -57,7 +57,7 @@ function Articles({ getData }: { getData: () => Promise<any> }) {
 		};
 		fetchData();
 		setIsLoading(false);
-	}, []);
+	}, [getData]);
 
 	if (isLoading || articles.length === 0) {
 		return <p className="text-xl text-center">Loading...</p>;
