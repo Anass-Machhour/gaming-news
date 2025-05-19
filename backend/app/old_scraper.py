@@ -14,17 +14,17 @@ async def fetch(session, url):
 
 
 async def scrape_website(website):
+    db = SessionLocal()
     try:
         async with aiohttp.ClientSession() as session:
-            with SessionLocal() as db:
-                website_id = await scrape_website_info(session, website, db)
-                await scrape_articles(website, website_id, session, db)
-                db.commit()
-
+            website_id = await scrape_website_info(session, website, db)
+            await scrape_articles(website, website_id, session, db)
+            db.commit()
     except Exception as e:
-        # In case of an error will Rollback
         db.rollback()
         print(f"An error occurred scraping {website['url']}: {e}")
+    finally:
+        db.close()
 
 
 async def scrape_articles(website, websiteID, session, db):
@@ -52,8 +52,7 @@ async def scrape_articles(website, websiteID, session, db):
                 for article in articles[:10]:
                     article_url = scrape_article_url(website, article)
 
-                    if type(article_url) == TypeError:
-                        print(article_url)
+                    if not article_url:
                         continue
 
                     article_db = db.query(Article).filter_by(

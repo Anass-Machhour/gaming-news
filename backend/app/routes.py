@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 import subprocess
 from .database import SessionLocal
 from .models import Website, Article
-from .scraper import start_scrape
+from .scraper import start_scraping
 from .serializer import WebsiteSchema
 
 
@@ -20,7 +20,7 @@ def initialize():
 
 @main.route("/api/scrape", methods=["POST"])
 def scrape():
-    asyncio.run(start_scrape())
+    asyncio.run(start_scraping())
     return jsonify({"message": "Scrapping started."}), 200
 
 
